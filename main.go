@@ -28,9 +28,9 @@ func root(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primiti
 		AddButtons([]string{"Login", "Register"}).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 			if buttonLabel == "Register" {
-				session.Application.SetRoot(akevitt.RegistrationScreen(engine, session, gameRoom), true)
+				session.Application.SetRoot(akevitt.RegistrationScreen(engine, session, gameScreen), true)
 			} else if buttonLabel == "Login" {
-				session.Application.SetRoot(akevitt.LoginScreen(engine, session, gameRoom), true)
+				session.Application.SetRoot(akevitt.LoginScreen(engine, session, gameScreen), true)
 			}
 		})
 
@@ -39,7 +39,7 @@ func root(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primiti
 	return modal
 }
 
-func gameRoom(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primitive {
+func gameScreen(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primitive {
 	playerMessage := ""
 
 	// Preparing session by initializing UI primitives, channels and collections.
