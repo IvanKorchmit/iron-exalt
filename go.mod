@@ -3,7 +3,7 @@ module github.com/IvanKorchmit/iron-exalt
 go 1.20
 
 require (
-	github.com/IvanKorchmit/akevitt v0.3.3-0.20231223113206-8813e4fb49a1
+	github.com/IvanKorchmit/akevitt v0.3.3-0.20240213110908-6d7d7960e6ec
 	github.com/rivo/tview v0.0.0-20230814110005-ccc2c8119703
 )
 
@@ -12,7 +12,7 @@ require (
 	github.com/boltdb/bolt v1.3.1 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
-	github.com/gdamore/tcell/v2 v2.6.0
+	github.com/gdamore/tcell/v2 v2.6.0 // indirect
 	github.com/gliderlabs/ssh v0.3.5 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
