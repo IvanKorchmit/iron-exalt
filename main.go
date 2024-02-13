@@ -62,16 +62,7 @@ func register(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Pri
 			repeatPassword = text
 		}).
 		AddButton("Register", func() {
-			username = strings.TrimSpace(username)
-			if username == "" {
-				akevitt.ErrorBox("Username is empty", session.Application, form)
-				return
-			}
-			if password != repeatPassword {
-				akevitt.ErrorBox("Passwords don't match", session.Application, form)
-				return
-			}
-			err := engine.Register(username, password, session)
+			err := engine.Register(username, password, repeatPassword, session)
 
 			if err != nil {
 				akevitt.ErrorBox(err.Error(), session.Application, form)
@@ -104,11 +95,6 @@ func login(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primit
 			password = text
 		}).
 		AddButton("Register", func() {
-			username = strings.TrimSpace(username)
-			if username == "" {
-				akevitt.ErrorBox("Username is empty", session.Application, form)
-				return
-			}
 			err := engine.Login(username, password, session)
 
 			if err != nil {

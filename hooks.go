@@ -13,7 +13,11 @@ func onMessage(engine *akevitt.Akevitt, session *akevitt.ActiveSession, channel,
 		return errors.New("session is nil. Probably the dead one")
 	}
 
-	chat := session.Data["chat"].(*logview.LogView)
+	chat, ok := session.Data["chat"].(*logview.LogView)
+
+	if !ok {
+		return errors.New("chatlog is not logview.LogView")
+	}
 
 	st := fmt.Sprintf("%s (%s): %s", username, channel, message)
 
