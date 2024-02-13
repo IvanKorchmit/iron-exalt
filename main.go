@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"strings"
-	"unicode"
 
 	"github.com/IvanKorchmit/akevitt"
 	"github.com/gdamore/tcell/v2"
@@ -29,85 +28,15 @@ func root(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primiti
 		AddButtons([]string{"Login", "Register"}).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 			if buttonLabel == "Register" {
-				session.Application.SetRoot(register(engine, session), true)
+				session.Application.SetRoot(akevitt.RegistrationScreen(engine, session, gameRoom), true)
 			} else if buttonLabel == "Login" {
-				session.Application.SetRoot(login(engine, session), true)
+				session.Application.SetRoot(akevitt.LoginScreen(engine, session, gameRoom), true)
 			}
 		})
 
 	modal.SetTitle("Welcome to Iron Exalt!")
 
 	return modal
-}
-
-func register(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primitive {
-	username := ""
-	password := ""
-	repeatPassword := ""
-
-	form := tview.NewForm()
-
-	form.AddInputField("Username", "", 0, func(textToCheck string, lastChar rune) bool {
-		if !unicode.IsLetter(lastChar) && !unicode.IsDigit(lastChar) || lastChar > unicode.MaxASCII {
-			return false
-		}
-
-		username = textToCheck
-		return true
-	}, nil).
-		AddPasswordField("Repeat password", "", 0, '*', func(text string) {
-			password = text
-		}).
-		AddPasswordField("Repeat password", "", 0, '*', func(text string) {
-			repeatPassword = text
-		}).
-		AddButton("Register", func() {
-			err := engine.Register(username, password, repeatPassword, session)
-
-			if err != nil {
-				akevitt.ErrorBox(err.Error(), session.Application, form)
-				return
-			}
-
-			session.Application.SetRoot(gameRoom(engine, session), true)
-		})
-
-	form.SetTitle("Registration")
-
-	return form
-}
-
-func login(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primitive {
-	username := ""
-	password := ""
-
-	form := tview.NewForm()
-
-	form.AddInputField("Username", "", 0, func(textToCheck string, lastChar rune) bool {
-		if !unicode.IsLetter(lastChar) && !unicode.IsDigit(lastChar) || lastChar > unicode.MaxASCII {
-			return false
-		}
-
-		username = textToCheck
-		return true
-	}, nil).
-		AddPasswordField("Repeat password", "", 0, '*', func(text string) {
-			password = text
-		}).
-		AddButton("Register", func() {
-			err := engine.Login(username, password, session)
-
-			if err != nil {
-				akevitt.ErrorBox(err.Error(), session.Application, form)
-				return
-			}
-
-			session.Application.SetRoot(gameRoom(engine, session), true)
-		})
-
-	form.SetTitle("Registration")
-
-	return form
 }
 
 func gameRoom(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primitive {

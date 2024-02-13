@@ -8,6 +8,8 @@ github.com/IvanKorchmit/akevitt v0.3.3-0.20240213110908-6d7d7960e6ec h1:gC5WYRkv
 github.com/IvanKorchmit/akevitt v0.3.3-0.20240213110908-6d7d7960e6ec/go.mod h1:HtNXy/pN9bQZ64NeXb3d3TGL/o8Wr7+dB9YfPOZKgzg=
 github.com/IvanKorchmit/akevitt v0.3.3-0.20240213122933-9e5abad35707 h1:x/xjiEqdBDXJ598IrXrhCZbZLQUA4q/4gGH47P0i+9E=
 github.com/IvanKorchmit/akevitt v0.3.3-0.20240213122933-9e5abad35707/go.mod h1:HtNXy/pN9bQZ64NeXb3d3TGL/o8Wr7+dB9YfPOZKgzg=
+github.com/IvanKorchmit/akevitt v0.3.3-0.20240213124635-adee275a329a h1:dIEEHS1U41l0KFsHfGrpK3CAi/8gOJbHcrpV33GgB7w=
+github.com/IvanKorchmit/akevitt v0.3.3-0.20240213124635-adee275a329a/go.mod h1:HtNXy/pN9bQZ64NeXb3d3TGL/o8Wr7+dB9YfPOZKgzg=
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be h1:9AeTilPcZAjCFIImctFaOjnTIavg87rW78vTPkQqLI8=
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be/go.mod h1:ySMOLuWl6zY27l47sB3qLNK6tF2fkHG55UZxx8oIVo4=
 github.com/araddon/dateparse v0.0.0-20210207001429-0eec95c9db7e/go.mod h1:DCaWoUhZrYW9p1lxo/cm8EmUOOzAPSEZNGF2DK1dJgw=

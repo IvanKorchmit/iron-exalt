@@ -3,7 +3,7 @@ module github.com/IvanKorchmit/iron-exalt
 go 1.20
 
 require (
-	github.com/IvanKorchmit/akevitt v0.3.3-0.20240213122933-9e5abad35707
+	github.com/IvanKorchmit/akevitt v0.3.3-0.20240213124635-adee275a329a
 	github.com/rivo/tview v0.0.0-20230814110005-ccc2c8119703
 )
 
