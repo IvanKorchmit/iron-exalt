@@ -30,6 +30,8 @@ func root(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primiti
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 			if buttonLabel == "Register" {
 				session.Application.SetRoot(register(engine, session), true)
+			} else if buttonLabel == "Login" {
+				session.Application.SetRoot(login(engine, session), true)
 			}
 		})
 
@@ -70,6 +72,44 @@ func register(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Pri
 				return
 			}
 			err := engine.Register(username, password, session)
+
+			if err != nil {
+				akevitt.ErrorBox(err.Error(), session.Application, form)
+				return
+			}
+
+			session.Application.SetRoot(gameRoom(engine, session), true)
+		})
+
+	form.SetTitle("Registration")
+
+	return form
+}
+
+func login(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primitive {
+	username := ""
+	password := ""
+
+	form := tview.NewForm()
+
+	form.AddInputField("Username", "", 0, func(textToCheck string, lastChar rune) bool {
+		if !unicode.IsLetter(lastChar) && !unicode.IsDigit(lastChar) || lastChar > unicode.MaxASCII {
+			return false
+		}
+
+		username = textToCheck
+		return true
+	}, nil).
+		AddPasswordField("Repeat password", "", 0, '*', func(text string) {
+			password = text
+		}).
+		AddButton("Register", func() {
+			username = strings.TrimSpace(username)
+			if username == "" {
+				akevitt.ErrorBox("Username is empty", session.Application, form)
+				return
+			}
+			err := engine.Login(username, password, session)
 
 			if err != nil {
 				akevitt.ErrorBox(err.Error(), session.Application, form)
