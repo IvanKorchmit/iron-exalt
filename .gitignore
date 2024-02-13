@@ -1,5 +1,6 @@
 # executables
 *.exe
+boltbrowser.win64.exe
 ironexalt
 # database files
 *.db
