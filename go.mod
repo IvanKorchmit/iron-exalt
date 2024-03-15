@@ -3,10 +3,10 @@ module github.com/IvanKorchmit/iron-exalt
 go 1.20
 
 require (
-	github.com/IvanKorchmit/akevitt v0.3.4-0.20240214095117-a8673565690c
+	github.com/IvanKorchmit/akevitt v0.3.4-0.20240215191559-cfb2683bd4c2
 	github.com/gdamore/tcell/v2 v2.6.0
 	github.com/rivo/tview v0.0.0-20230814110005-ccc2c8119703
-	github.com/uaraven/logview v0.1.0
+	github.com/uaraven/logview v0.1.0 // indirect
 )
 
 require (

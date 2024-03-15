@@ -12,7 +12,6 @@ import (
 	"github.com/IvanKorchmit/akevitt/plugins"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"github.com/uaraven/logview"
 )
 
 func main() {
@@ -24,9 +23,24 @@ func main() {
 		UseRootUI(root).
 		UseSpawnRoom(&customRoom).
 		AddPlugin(plugins.NewBoltPlugin[*akevitt.Account]("database.db")).
-		AddPlugin(plugins.NewMessagePlugin(true, onMessage)).
-		AddPlugin(plugins.NewHeartbeatPlugin().NewDuration(time.Second).Finish()).
+		AddPlugin(plugins.NewDefaultPlugins()).
 		UseOnJoin(InitBundle).
+		UseRegisterCommand("look", func(engine *akevitt.Akevitt, session *akevitt.ActiveSession, arguments string) error {
+			message, err := akevitt.FetchPlugin[*plugins.MessagePlugin](engine)
+			if err != nil {
+				return err
+			}
+
+			bundle, ok := session.Data[IronExaltBundle].(Bundle)
+
+			if !ok {
+				return errors.New("could not cast to bundle")
+			}
+
+			output := fmt.Sprintf("You're in %s", bundle.Character.room.Name)
+
+			return (*message).Message(engine, bundle.Character.Name, output, "", session)
+		}).
 		UseRegisterCommand("boop", func(engine *akevitt.Akevitt, session *akevitt.ActiveSession, arguments string) error {
 			heartbeat, err := akevitt.FetchPlugin[*plugins.HeartBeatsPlugin](engine)
 			if err != nil {
@@ -52,13 +66,9 @@ func main() {
 				return err
 			}
 
-			character, ok := session.Account.PersistentData["character"].(*Character)
+			character := session.Account.PersistentData[IronExaltBundle].(*Bundle).Character
 
-			if !ok {
-				return errors.New("cannot cast any to Character at key \"character\"")
-			}
-
-			return (*message).Message(engine, "ooc", arguments, character.Name, session)
+			return (*message).Message(engine, character.room.Name, arguments, character.Name, session)
 		}).
 		UseBind(":2222").
 		Finish()
@@ -72,7 +82,17 @@ func root(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primiti
 			if buttonLabel == "Register" {
 				session.Application.SetRoot(akevitt.RegistrationScreen(engine, session, characterWizard), true)
 			} else if buttonLabel == "Login" {
-				session.Application.SetRoot(akevitt.LoginScreen(engine, session, gameScreen), true)
+				session.Application.SetRoot(akevitt.LoginScreen(engine, session, func(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primitive {
+					character := Fetch[*Bundle](session.Data, IronExaltBundle)
+
+					bundle := session.Data[IronExaltBundle].(Bundle)
+
+					bundle.Character = *character
+					session.Account.PersistentData["character"] = &bundle.Character
+					r, _ := engine.GetRoom(bundle.Character.RoomKey)
+					bundle.Character.UpdateRoom(r)
+					return gameScreen(engine, session)
+				}), true)
 			}
 		})
 
@@ -97,11 +117,14 @@ func characterWizard(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tv
 
 		bundle := session.Data[IronExaltBundle].(Bundle)
 		bundle.Character.Name = characterName
+		bundle.Character.UpdateRoom(engine.GetSpawnRoom())
 
 		database, err := akevitt.FetchPlugin[akevitt.DatabasePlugin[*akevitt.Account]](engine)
 
-		session.Account.PersistentData["character"] = &bundle.Character
-		session.Account.PersistentData["familiars"] = bundle.Familiars
+		session.Account.PersistentData[IronExaltBundle] = bundle.Character
+		channels := session.Data[plugins.MessagePluginData].([]string)
+		channels = append(channels, characterName)
+		session.Data[plugins.MessagePluginData] = channels
 
 		if err != nil {
 			panic(err)
@@ -119,12 +142,9 @@ func characterWizard(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tv
 func gameScreen(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.Primitive {
 	playerMessage := ""
 
-	fmt.Printf("session.Account: %v\n", session.Account)
+	defaults, _ := akevitt.FetchPlugin[*plugins.DefaultPlugins](engine)
 
-	// Preparing session by initializing UI primitives, channels and collections.
-	chatlog := logview.NewLogView()
-	chatlog.SetLevelHighlighting(true)
-	session.Data["chat"] = chatlog
+	(*defaults).Messages.GetChatLog(session)
 
 	inputField := tview.NewInputField().
 		SetChangedFunc(func(text string) {
@@ -135,7 +155,7 @@ func gameScreen(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.P
 		SetRows(3, 0, 3).
 		SetColumns(30, 0, 30).
 		AddItem(inputField, 2, 0, 1, 3, 0, 0, true).
-		AddItem(chatlog, 1, 1, 1, 2, 0, 0, false).
+		AddItem((*defaults).Messages.GetChatLog(session), 1, 1, 1, 2, 0, 0, false).
 		SetBorders(true)
 	inputField.SetFinishedFunc(func(key tcell.Key) {
 		if key != tcell.KeyEnter {
@@ -147,7 +167,7 @@ func gameScreen(engine *akevitt.Akevitt, session *akevitt.ActiveSession) tview.P
 			return
 		}
 
-		akevitt.AppendText("\t>"+playerMessage, chatlog)
+		akevitt.AppendText("\t>"+playerMessage, (*defaults).Messages.GetChatLog(session))
 		err := engine.ExecuteCommand(playerMessage, session)
 		if err != nil {
 			akevitt.ErrorBox(err.Error(), session.Application, game)
